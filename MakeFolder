@@ -11,7 +11,7 @@ else
     echo Linking Conf directory
     ln -s ../Conf
     echo Linking Data directory
-    ln -s /Volumes/SamsungT7/EXP_016/AgataData/run_$runNr*/Data
+    ln -s /Volumes/My\ Passport/EXP_016/AgataData/run_$runNr*/Data
     if [[ -f ../gen_conf/gen_conf_$runNr.py ]]; then
         ln -s ../GenConf/gen_conf_$runNr.py gen_conf.py
     else
@@ -22,11 +22,11 @@ else
     ./gen_conf.py
     # ls /Volumes/My Passport/EXP_016/AgataData/run_$runNr*/Data/prisma/*rucaenmps >> inputfiles.txt
     #ll "/Volumes/My Passport/EXP_016/AncillaryData/run_$runNr/Data/ancillaries/" | wc -l
-    totFiles=$( ls -lthr  /Volumes/SamsungT7/EXP_016/AncillaryData/run_$runNr*/Data/ancillaries/ | wc -l)
+    totFiles=$( ls -lthr  /Volumes/My\ Passport/EXP_016/AncillaryData/run_$runNr*/Data/ancillaries/ | wc -l)
     totFiles=$(( totFiles-1 ))
     for ((i = 0 ; i < totFiles ; i++ )); do
         filNum=$(printf "%04d" $i)
-        ln -s /Volumes/SamsungT7/EXP_016/AncillaryData/run_$runNr*/Data/ancillaries/*$filNum\.adf prisma_$filNum\.adf
+        ln -s /Volumes/My\ Passport/EXP_016/AncillaryData/run_$runNr*/Data/ancillaries/*$filNum\.adf prisma_$filNum\.adf
     done
 
     #ln -s
