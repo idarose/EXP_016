@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 """
 Script to generate the configuration files for the replay of AGATA data using the
 multi-process distributed system Narval or the single-process emulator femul.
@@ -49,7 +49,7 @@ MACROS={              # various replacements for symbols defined in 2).
 '$LABR'     	: 'labr',
 '$DANTE'     	: 'dante',
 '$OSCAR'        : 'oscar',
-'$PSABASE'      : '/agatadisks/bases_ADL',     # standard place at AGATA
+'$PSABASE'      : '/lustre/ific.uv.es/prj/gl/agata/data/bases_ADL',     # standard place at AGATA
 '$CRYSTAL_ID'   : "",                          # the actual value is defined in GeDataBase
 '$SIGNAL_BASIS' : "",                          # the actual value is defined in GeDataBase
 '$CRYSTAL'      : "",                          # the actual value taken from Topology['CRYSTAL']
@@ -66,12 +66,12 @@ Topology={    # The directories to be generated in Conf, Data and Out
 'MERGER'    : "Merger",
 'GLOBAL'    : "Global",
 'PRISMA'    : "prisma",
-# 'SPIDER'    : "spider",
-# 'SAURON'    : "sauron",
-# 'EUCLIDES'  : "euclides",
+'SPIDER'    : "spider",
+'SAURON'    : "sauron",
+'EUCLIDES'  : "euclides",
 'LABR'      : "labr",
-# 'DANTE'     : "dante",
-# 'OSCAR'     : "oscar",
+'DANTE'     : "dante",
+'OSCAR'     : "oscar",
 'ANALYSIS'  : "Analysis",
 }
 
@@ -82,7 +82,7 @@ Topology={    # The directories to be generated in Conf, Data and Out
 # This suffix will be silently removed from the actual name of the generated configuration files.
 
 Actors={      # These are the xxxx.conf files to be generated 
-'CRYSTAL'      : "CrystalProducer PreprocessingFilter PSAFilter BasicAFC BasicAFP_CRYSTAL PostPSAFilter",
+'CRYSTAL'      : "CrystalProducer PreprocessingFilter PSAFilter BasicAFC BasicAFP_CRYSTAL PostPSAFilter PostPSAFilter",
 'OSCAR'        : "BasicAFP_OSCAR TB_OSCAR TreeBuilder", 
 'PRISMA'       : "BasicAFP_PRISMA BasicAFC_PRISMA TreeBuilder TB_PRISMA manager_PRISMA", 
 'SPIDER'       : "BasicAFP_SPIDER TB_SPIDER TreeBuilder", 
@@ -95,7 +95,7 @@ Actors={      # These are the xxxx.conf files to be generated
 }
 
 ExtraFiles={  # If not already present, these files can be copied from a directory specified in the command line. CrystalPos LUT is placed at 3 places in order to have eventually tracking at different places offline
-# 'CRYSTAL'   : "CrystalProducerATCA.conf PreprocessingFilterPSA.conf xinv_1325-1340.cal xdir_1325-1340.cal Trapping.cal RecalEnergy2.cal", #Trapping_$CRYSTAL.cal recal2.dat <== files for n damage correction, not used at the moment
+'CRYSTAL'   : "CrystalProducerATCA.conf PreprocessingFilterPSA.conf xinv_1325-1340.cal xdir_1325-1340.cal Trapping.cal RecalEnergy2.cal", #Trapping_$CRYSTAL.cal recal2.dat <== files for n damage correction, not used at the moment
 'MERGER'    : "CrystalPositionLookUpTable",
 'BUILDER'   : "CrystalPositionLookUpTable",
 }
@@ -138,6 +138,17 @@ CrystalProducer=(
 #"Verbose",                                       # more verbose terminal-output
 #### command lines to be produced only for the specified crystals
 {
+#'1B' : "WriteDataRange  5500 20000",                    
+#'20B': "TstampCorrection      60", 
+
+#'07B': "SmokeCC            1 0 1.418808",  	
+#'07B': "SmokeCC            0 0 0.822678",  
+#'07B': "SmokeSG            0 0 0.742104",  
+
+#'07C': "SmokeCC            1 0 1.436627",  	
+#'07C': "SmokeCC            0 0 0.800169",  	
+#'07C': "SmokeSG            0 0 0.753877 ",  # only taking the last one of the 3 smokes		
+                     
 }
 )
 
@@ -160,9 +171,16 @@ PreprocessingFilter=(
 #"Verbose",                                      # more verbose terminal-output
 #### command lines to be produced only for the specified crystals
 {
+
+
+#'00B' : ("DeadSegment    12  0.936377  0"),
 '05B' : ("DeadSegment    24  0.952100  0."),
+#'06C' : ("DeadSegment    17  0.953663  0"),
+#'08A' : ("DeadSegment    9  0.956071  0"),
 '08B' : ("DeadSegment    8  0.949936  0"),
 '11A' : ("DeadSegment    30  0.949938  0."),
+#'06C' : ("DeadSegment    18  0.949078  0"),
+
 }
 )
 
@@ -190,9 +208,15 @@ PSAFilter=(
 #"Verbose",                                       # more verbose terminal-output
 #### command lines to be produced only for the specified crystals
 {
+
+#'00B' : ("DeadSegment    12"),
 '05B' : ("DeadSegment    24"),
+#'06C' : ("DeadSegment    17"),
+#'08A' : ("DeadSegment    9"),
 '08B' : ("DeadSegment    8"),
 '11A' : ("DeadSegment    30"),
+#'06C' : ("DeadSegment    18"),
+
 }
 )
 
@@ -200,57 +224,54 @@ PostPSAFilter=(
 "ActualClass           PostPSAFilter",           # name of the used daugther class, uncomment for offline 
 "SaveDataDir           $SAVEDIR/$CRYSTAL",       # normally Out
 "EnergyGain            4",                       # channels/keV of the calibrated energy spectra
-"SmearPos              -4",                       # to randomize points on a 2mm3 volume - negative means special treatment of low energy (< 100 keV)
+#"SmearPos              -4",                       # to randomize points on a 2mm3 volume - negative means special treatment of low energy (< 100 keV)
 #"ForceSegmentsToCore",                           # sum of segments forced to energy of the core. Use it EITHER in the PSA OR in the Tracking
-#"CoreEnergyGate        500 520 ",               # possibility to restrict the energy range
+#"CoreEnergyGate         500 520 ",               # possibility to restrict the energy range
 #"RecalCC                1",                     # recalibration of CC Energy
 #"RecalSG                1",                     # recalibration fired Segments
 #"TimeShiftCC           f32",                    # time shift of core (ns)
 #"Verbose",                                      # more verbose terminal-output
-"TrappingFile          Trapping.cal",  # file with the trapping-correction coefficients
+"TrappingFile          Trapping.cal",            # file with the trapping-correction coefficients
+"RecalEnergy2          RecalEnergy2.cal",        # file with the coefficients for the final recalibration
+"ForceSegmentsToCore",                           # sum of segments forced to energy of the core. Use it EITHER in the PSA OR in the Tracking
 #"NoMultiHist",                                  # exclude local spectra and matrices
 #"NewCrystalID         i32",                     #change ID of crystal
 #### command lines to be produced only for the specified crystals
 {
-'00A' : ("TimeShiftCC   5.728 ","RecalCC  0.134 1.000286","RecalSG  0.301 1.000681","ForceSegmentsToCore"),
-'00B' : ("TimeShiftCC   1.623 ","RecalCC  0.130 1.000183","RecalSG -0.011 1.000033","ForceSegmentsToCore"),
-'00C' : ("TimeShiftCC  -0.751 ","RecalCC -0.017 1.000676","RecalSG -0.030 1.000202","ForceSegmentsToCore"),
-'01A' : ("TimeShiftCC   0.601 ","RecalCC -0.244 1.000592","RecalSG  0.233 1.000771","ForceSegmentsToCore"),
-'01B' : ("TimeShiftCC  -6.167 ","RecalCC  0.000 0.000000","RecalSG  0.000 0.000000","ForceSegmentsToCore"),
-'01C' : ("TimeShiftCC  -5.064 ","RecalCC -0.023 1.000617","RecalSG -0.091 1.001578","ForceSegmentsToCore"),
-'02A' : ("TimeShiftCC  -1.787 ","RecalCC  0.095 1.000592","RecalSG  0.544 1.000964","ForceSegmentsToCore"),
-'02B' : ("TimeShiftCC  -2.755 ","RecalCC  0.083 0.999394","RecalSG  0.065 1.001731","ForceSegmentsToCore"),
-'02C' : ("TimeShiftCC   0.993 ","RecalCC  0.000 0.000000","RecalSG  0.000 0.000000","ForceSegmentsToCore"),
-'04A' : ("TimeShiftCC   3.286 ","RecalCC  0.080 0.999952","RecalSG -0.041 1.003393","ForceSegmentsToCore"),
-'04B' : ("TimeShiftCC  -8.735 ","RecalCC  0.149 1.000195","RecalSG  0.218 1.001272","ForceSegmentsToCore"),
-'04C' : ("TimeShiftCC  -0.344 ","RecalCC  0.136 0.999791","RecalSG  0.043 1.001747","ForceSegmentsToCore"),
-'05A' : ("TimeShiftCC  -1.801 ","RecalCC  0.158 1.000451","RecalSG  0.292 1.000967","ForceSegmentsToCore"),
-'05B' : ("TimeShiftCC  -0.712 ","RecalCC -0.094 0.999389","RecalSG -0.074 1.001221","ForceSegmentsToCore"),
-'05C' : ("TimeShiftCC  -0.860 ","RecalCC  0.029 0.999619","RecalSG  0.190 1.001808","ForceSegmentsToCore"),
-'06A' : ("TimeShiftCC   0.000 ","RecalCC  0.121 1.002627","RecalSG -0.295 1.002544","ForceSegmentsToCore"),
-'06B' : ("TimeShiftCC   0.000 ","RecalCC  0.124 1.001576","RecalSG -0.117 1.003444","ForceSegmentsToCore"),
-'06C' : ("TimeShiftCC   0.000 ","RecalCC  0.759 0.999578","RecalSG -0.024 1.003463","ForceSegmentsToCore"),
-'07A' : ("TimeShiftCC   2.750 ","RecalCC -0.327 1.000436","RecalSG  0.088 1.000649","ForceSegmentsToCore"),
-'07B' : ("TimeShiftCC   0.749 ","RecalCC -0.046 1.005380","RecalSG  0.201 1.000541"			 ),
-'07C' : ("TimeShiftCC  -6.373 ","RecalCC  0.546 1.000094","RecalSG  0.377 1.000545","ForceSegmentsToCore"),
-'08A' : ("TimeShiftCC  -1.156 ","RecalCC  0.176 1.000714","RecalSG -0.123 1.004656","ForceSegmentsToCore"),
-'08B' : ("TimeShiftCC   4.675 ","RecalCC -0.082 1.000163","RecalSG  0.042 0.999870","ForceSegmentsToCore"),
-'08C' : ("TimeShiftCC   5.138 ","RecalCC  0.000 0.000000","RecalSG  0.000 0.000000","ForceSegmentsToCore"),
-'09A' : ("TimeShiftCC   5.431 ","RecalCC -0.729 1.001897","RecalSG  0.521 1.001548","ForceSegmentsToCore"),
-'09B' : ("TimeShiftCC  -3.305 ","RecalCC -0.719 1.000925","RecalSG  0.482 1.001353","ForceSegmentsToCore"),
-'09C' : ("TimeShiftCC  11.221 ","RecalCC  0.729 1.000063","RecalSG  0.065 1.002001","ForceSegmentsToCore"),
-'10A' : ("TimeShiftCC   2.690 ","RecalCC  0.003 1.000147","RecalSG  0.194 1.001017","ForceSegmentsToCore"),
-'10B' : ("TimeShiftCC  -0.311 ","RecalCC  0.420 1.000811","RecalSG  0.187 1.002660","ForceSegmentsToCore"),
-'10C' : ("TimeShiftCC   0.753 ","RecalCC -0.170 1.000162","RecalSG  0.130 1.001670","ForceSegmentsToCore"),
-'11A' : ("TimeShiftCC   1.827 ","RecalCC  0.116 1.000126","RecalSG  0.035 1.001871","ForceSegmentsToCore"),
-'11B' : ("TimeShiftCC  -4.590 ","RecalCC -0.174 0.999154","RecalSG  0.233 1.001960","ForceSegmentsToCore"),
-'11C' : ("TimeShiftCC   1.666 ","RecalCC  0.148 0.999813","RecalSG -0.141 1.001166","ForceSegmentsToCore"),
-'13A' : ("TimeShiftCC   5.731 ","RecalCC  0.000 0.000000","RecalSG  0.000 0.000000","ForceSegmentsToCore"),
-'13B' : ("TimeShiftCC  -5.949 ","RecalCC  0.000 0.000000","RecalSG  0.000 0.000000","ForceSegmentsToCore"),
-'13C' : ("TimeShiftCC   1.679 ","RecalCC  0.000 0.000000","RecalSG  0.000 0.000000","ForceSegmentsToCore"),
-'14A' : ("TimeShiftCC  -4.121 ","RecalCC  0.556 0.998784","RecalSG  0.203 1.001531","ForceSegmentsToCore"),
-'14B' : ("TimeShiftCC   2.877 ","RecalCC  0.006 0.999389","RecalSG  0.209 1.001674","ForceSegmentsToCore"),
-'14C' : ("TimeShiftCC  -4.639 ","RecalCC -0.075 0.998905","RecalSG -0.057 1.004716","ForceSegmentsToCore"),
+'00A' : ("RecalCC -0.001  0.999896", "TimeShiftCC  -5.347"),
+'00B' : ("RecalCC  0.091  1.000069", "TimeShiftCC   6.679"),
+'00C' : ("RecalCC  0.050  1.000196", "TimeShiftCC   0.358"),
+'01A' : ("RecalCC -0.118  1.000187", "TimeShiftCC   4.635"),
+'01C' : ("RecalCC  0.190  1.000433", "TimeShiftCC   0.269"),
+'02A' : ("RecalCC -0.046  1.000053", "TimeShiftCC   4.709"),
+'02B' : ("RecalCC  0.164  0.999878", "TimeShiftCC   1.633"),
+'04A' : ("RecalCC  0.087  0.999945", "TimeShiftCC   0.111"),
+'04B' : ("RecalCC  0.161  0.999866", "TimeShiftCC  -9.008"),
+'04C' : ("RecalCC  0.139  1.000023", "TimeShiftCC  -3.241"),
+'05A' : ("RecalCC  0.201  1.000303", "TimeShiftCC   3.230"),
+'05B' : ("RecalCC -0.088  1.000079", "TimeShiftCC  -4.823"),
+'05C' : ("RecalCC  0.147  1.000392", "TimeShiftCC  -3.114"),
+'06A' : ("RecalCC  0.216  0.999661", "TimeShiftCC   2.295"),
+'06B' : ("RecalCC  0.214  1.000883", "TimeShiftCC  -2.621"),
+'06C' : ("RecalCC  0.719  0.999649", "TimeShiftCC   6.557"),
+'07A' : ("RecalCC -0.040  1.000469", "TimeShiftCC   1.549"),
+'07B' : ("RecalCC -0.004  1.012174", "TimeShiftCC   2.240"),
+'07C' : ("RecalCC  0.344  0.999819", "TimeShiftCC  -6.658"),
+'08A' : ("RecalCC  0.133  1.000114", "TimeShiftCC  -3.387"),
+'08B' : ("RecalCC -0.056  0.999365", "TimeShiftCC   4.358"),
+'09A' : ("RecalCC -1.198  1.001560", "TimeShiftCC   2.618"),
+'09B' : ("RecalCC -0.930  1.000875", "TimeShiftCC  -3.876"),
+'09C' : ("RecalCC  0.681  0.999362", "TimeShiftCC  -4.234"),
+'10A' : ("RecalCC  0.041  1.000073", "TimeShiftCC  -0.784"),
+'10B' : ("RecalCC  0.022  0.999956", "TimeShiftCC  -2.756"),
+'10C' : ("RecalCC -0.074  1.000017", "TimeShiftCC   1.290"),
+'11A' : ("RecalCC  0.082  1.000344", "TimeShiftCC   4.792"),
+'11B' : ("RecalCC -0.154  0.999832", "TimeShiftCC   3.758"),
+'11C' : ("RecalCC  0.235  0.999996", "TimeShiftCC   0.200"),
+'14A' : ("RecalCC -1.148  0.999140", "TimeShiftCC  -3.678"),
+'14B' : ("RecalCC  0.043  1.000279", "TimeShiftCC   3.993"),
+'14C' : ("RecalCC -0.055  1.000147", "TimeShiftCC  -1.748"),
+
 }
 )
 
@@ -260,9 +281,9 @@ TrackingFilter=(
 "ActualClass           TrackingFilterOFT",          # name of the used daugther class (TrackingFilterOFT or TrackingFilterMGT)
 "SaveDataDir           $SAVEDIR/$MERGER",           # Out/Global
 "EnergyGain            4",                          # channels/keV of the calibrated energy spectra
-#"ExcludeTracking",                                 # skip the tracking part of the actor; remains only the data processing
+"ExcludeTracking",                                 # skip the tracking part of the actor; remains only the data processing
 "OftParams           0.05 0.02 0.8 1",              #  minprobtrack minprobsing sigma_thet (0==default)
-#"MgtParams           0                             #  max value of Chi2 to accept a tracked gamma (0==default)
+#"MgtParams            0                             #  max value of Chi2 to accept a tracked gamma (0==default)
 "SourcePosition        0 0 0",                      # position of source with respect to the center of AGATA Position of source
 "DiscardEmpty          0",			    # to discard events that does not pass the tracking (don't discard allows to keep the events in the PSA hits)
 #"RecoilDirection       0 0 1",                     # fixed recoil direction for Doppler correction (if not using info from Ancillary) 
@@ -280,46 +301,41 @@ TrackingFilter=(
 #"MatrixZYX           f32 f32 i32 f32",             # hits and intercepts: zOffset and zScale for hits; range and scale of z-planes
 #"OutputModel           kSafe",                    	# kStrict (default)  kSafe  kGrowing, behaviour for ADF
 #"Verbose",                                         # more verbose terminal-output
-"NumGeDets  39",				    # Overrides the default number of Ge Crystals [20], just for printing of TkT spectra
+"NumGeDets  33",                    # Overrides the default number of Ge Crystals [20], just for printing of TkT spectra
 "SpecMap 0 0", # 00A   // Id-core #core
 "SpecMap 1 1", # 00B
 "SpecMap 2 2", # 00C
 "SpecMap 3 3", # 01A
-"SpecMap 4 4", # 01B
-"SpecMap 5 5", # 01C
-"SpecMap 6 6", # 02A
-"SpecMap 7 7", # 02B
-"SpecMap 8 8", # 02C
-"SpecMap 12 9", # 04A
-"SpecMap 13 10", # 04B
-"SpecMap 14 11", # 04C
-"SpecMap 15 12", # 05A
-"SpecMap 16 13", # 05B
-"SpecMap 17 14", # 05C
-"SpecMap 18 15", # 06A
-"SpecMap 19 16", # 06B
-"SpecMap 20 17", # 06C
-"SpecMap 21 18", # 07A
-"SpecMap 22 19", # 07B
-"SpecMap 23 20", # 07C
-"SpecMap 24 21", # 08A
-"SpecMap 25 22", # 08B
-"SpecMap 26 23", # 08C
-"SpecMap 27 24", # 09A
-"SpecMap 28 25", # 09B
-"SpecMap 29 26", # 09C
-"SpecMap 30 27", # 10A
-"SpecMap 31 28", # 10B
-"SpecMap 32 29", # 10C
-"SpecMap 33 30", # 11A
-"SpecMap 34 31", # 11B
-"SpecMap 35 32", # 11C
-"SpecMap 39 33", # 13A
-"SpecMap 40 34", # 13B
-"SpecMap 41 35", # 13C
-"SpecMap 42 36", # 14A
-"SpecMap 43 37", # 14B
-"SpecMap 44 38", # 14C
+"SpecMap 5 4", # 01C
+"SpecMap 6 5", # 02A
+"SpecMap 7 6", # 02B
+"SpecMap 12 7", # 04A
+"SpecMap 13 8", # 04B
+"SpecMap 14 9", # 04C
+"SpecMap 15 10", # 05A
+"SpecMap 16 11", # 05B
+"SpecMap 17 12", # 05C
+"SpecMap 18 13", # 06A
+"SpecMap 19 14", # 06B
+"SpecMap 20 15", # 06C
+"SpecMap 21 16", # 07A
+"SpecMap 22 17", # 07B
+"SpecMap 23 18", # 07C
+"SpecMap 24 19", # 08A
+"SpecMap 25 20", # 08B
+"SpecMap 27 21", # 09A
+"SpecMap 28 22", # 09B
+"SpecMap 29 23", # 09C
+"SpecMap 30 24", # 10A
+"SpecMap 31 25", # 10B
+"SpecMap 32 26", # 10C
+"SpecMap 33 27", # 11A
+"SpecMap 34 28", # 11B
+"SpecMap 35 29", # 11C
+"SpecMap 42 30", # 14A
+"SpecMap 43 31", # 14B
+"SpecMap 44 32", # 14C
+
 
 #When active with ancillary ######################33
 #"KeepEmpty",                                   	# send to the adf output also events without gammas
@@ -365,8 +381,8 @@ EventMerger_MERGER=(
 #"keyIn                 data:psa",                 # key of 1st queue.  
 #"keyIn                 data:psa",                 # key of 2nd queue. 'None' to not have the surrounding frame
 #"keyOut                event:data:psa",           # key of the output frame default is event:data. 'None' to not have the surrounding frame
-"MinFold               2",                        # 2 if you want to force the coincidence between AGATA and the Ancillary
-"TstampCorrect      0  19",                 # indexed by the input queue number !!
+"MinFold               2",                        # 2 if you want to force the coincidence between AGATA and the Ancillary                       
+"TstampCorrect      0  0",                 # indexed by the input queue number !!
 #"TstampLimits   ui32 ui32",                      # discard events outside this data-timestamp interval (seconds)
 #"TstampRegions  ui64 ui64 str",                  # tStampMin, tStampStep, TxtFile with 0/1 for each timestamp step
 #"RateProfile    ui64 ui64 i32",                  # tStampMin, tStampStep, Length of rate-profile spectrum
@@ -453,14 +469,14 @@ TreeBuilder=(  #From 2022
 "SaveDataDir    $SAVEDIR/$ANALYSIS   Tree_  TreeMaster ",            # name of the final root file "AgNedDiamTree_0000.root"
 "AddDetector    AGATA_BUILDER   event:data:psa         0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
 "AddDetector    AGATA_TRACKING  data:tracked           0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
-# "AddDetector    OSCAR		event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
+#"AddDetector    OSCAR		event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
 "AddDetector    PRISMA          event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
 #"AddDetector    SPIDER          event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
 #"AddDetector    EUCLIDES          event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
 #"AddDetector    SAURON          event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
-# "AddDetector    LABR		event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
+#"AddDetector    LABR		event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
 #"AddDetector    DANTE event:ranc             0",           # Add a detector in the Tree (DetName, ADF key, Mode [-1: Must NOT be present, 0: Can be present, 1: Must be present])
-"MaxRootFileSize 2000",
+"MaxRootFileSize 1000",
 "MergerMode",
 )
 
@@ -675,7 +691,7 @@ def makeFileName(pre, cc, aa, topo):
     #import pdb; pdb.set_trace()
     if PROGTYPE == "NARVAL" :
         if aa == "EventBuilder" or aa == "EventMerger" :
-            print((" "+aa+".conf").ljust(18), "not generated when using NARVAL")
+            print (" "+aa+".conf").ljust(18), "not generated when using NARVAL"
             return ""
     ff = os.path.join(pre, cc, aa+'.conf')
     ff = ff.replace('_'+topo, '')
@@ -707,7 +723,7 @@ def checkExtraFiles(new, old, dd, files):
                          shutil.copy(gg, ff)
                      print(" Copied   ", gg)
             if not os.path.exists(ff):
-                print(" Missing  ", ff)
+                print(" Missing  ", ff) 
 
 def checkArgsAndMacros():
     """
@@ -745,14 +761,14 @@ def checkArgsAndMacros():
         MACROS['$SAVEDIR'] = MACROS['$READDIR']
         del MACROS['$READDIR']
 
-    print()
+    print
     print('CWD     '.ljust(10), " --> ", CWD)
     print('PROGTYPE'.ljust(10), " --> ", PROGTYPE)
     print('CONFTYPE'.ljust(10), " --> ", CONFTYPE)
     for a in MACROS:
         if MACROS[a] != '':
             print(a.ljust(10), " --> ", MACROS[a])
-    print()
+    print
 
     newPrefix = MACROS['$CONFDIR']
     if options.confold is None:
@@ -767,7 +783,7 @@ def main():
     (newConf, oldConf) = checkArgsAndMacros()
     print("newConf = ", newConf)
     print("oldConf = ", oldConf)
-    print()
+    print
 
     global verbstr
     myGlobals = globals()
@@ -790,7 +806,7 @@ def main():
                  if topo in ExtraFiles:
                      checkExtraFiles(newConf, oldConf, dd, ExtraFiles[topo])
                  if verbstr:
-                     print(" " + verbstr)
+                     print(" " + verbstr) 
 
 ###############################################################################################
 ###############################################################################################

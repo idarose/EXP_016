@@ -5,7 +5,7 @@ for ((n=234; n<=282; n++)); do
     echo "Processing iteration i $n..."
 
     # Source MakeFolder to create the directory
-    source MakeFolder $n
+    source Folder $n
 
     # Generate the target directory name
     dir_name=$(printf "run_%04d" $n)  # Pad to 4 digits (e.g., run_0234)
